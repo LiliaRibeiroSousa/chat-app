@@ -10,7 +10,7 @@ Real-time chat: Users can chat with other members of their teams in real-time.
 ### Technologies Used 
 React: A JavaScript library for building user interfaces. \
 Express: A web application framework for Node.js. \
-Chat Engine: A real-time chat SDK and API. 
+Chat Engine: A real-time chat API. 
 
 ### Contributing 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
