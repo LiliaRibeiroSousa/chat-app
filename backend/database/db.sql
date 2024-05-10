@@ -23,13 +23,17 @@ DROP TABLE IF EXISTS `direct_messages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `direct_messages` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `content` varchar(255) DEFAULT NULL,
-  `sender_ID` varchar(255) DEFAULT NULL,
-  `receiver_ID` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `sender_id` int(11) DEFAULT NULL,
+  `receiver_id` int(11) DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `sender_id` (`sender_id`),
+  KEY `receiver_id` (`receiver_id`),
+  CONSTRAINT `direct_messages_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `direct_messages_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,11 +42,6 @@ CREATE TABLE `direct_messages` (
 
 LOCK TABLES `direct_messages` WRITE;
 /*!40000 ALTER TABLE `direct_messages` DISABLE KEYS */;
-INSERT INTO `direct_messages` VALUES
-(5,'2024-04-09 13:23:04','Hello','2','1'),
-(6,'2024-04-09 13:41:07','Antohter','2','1'),
-(7,'2024-04-09 13:48:02','Cyka Blyat','2','1'),
-(8,'2024-04-09 13:48:31','Cyka Blyat too','1','2');
 /*!40000 ALTER TABLE `direct_messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -54,12 +53,11 @@ DROP TABLE IF EXISTS `lobbies`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `lobbies` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `name` varchar(255) DEFAULT NULL,
-  `admin_ID` varchar(255) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lobby_name` varchar(100) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,10 +66,6 @@ CREATE TABLE `lobbies` (
 
 LOCK TABLES `lobbies` WRITE;
 /*!40000 ALTER TABLE `lobbies` DISABLE KEYS */;
-INSERT INTO `lobbies` VALUES
-(1,'2024-04-08 08:08:28','MotherFucker Lobby','2'),
-(2,'2024-04-25 10:06:57','New Lobby','2'),
-(3,'2024-04-25 10:07:03','Antoher Lobby','2');
 /*!40000 ALTER TABLE `lobbies` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -83,12 +77,17 @@ DROP TABLE IF EXISTS `lobby_members`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `lobby_members` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `lobby_ID` varchar(255) DEFAULT NULL,
-  `user_ID` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `lobby_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `is_admin` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `lobby_id` (`lobby_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `lobby_members_ibfk_1` FOREIGN KEY (`lobby_id`) REFERENCES `lobbies` (`id`),
+  CONSTRAINT `lobby_members_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,11 +96,6 @@ CREATE TABLE `lobby_members` (
 
 LOCK TABLES `lobby_members` WRITE;
 /*!40000 ALTER TABLE `lobby_members` DISABLE KEYS */;
-INSERT INTO `lobby_members` VALUES
-(1,'2024-04-08 08:08:28','1','2'),
-(2,'2024-04-08 08:16:37','1','1'),
-(3,'2024-04-25 10:06:57','2','2'),
-(4,'2024-04-25 10:07:03','3','2');
 /*!40000 ALTER TABLE `lobby_members` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,14 +107,17 @@ DROP TABLE IF EXISTS `lobby_messages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `lobby_messages` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `user_ID` int(11) NOT NULL,
-  `content` varchar(255) DEFAULT NULL,
-  `lobby_ID` int(11) NOT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `user_id` int(11) DEFAULT NULL,
+  `lobby_id` int(11) DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `lobby_id` (`lobby_id`),
+  CONSTRAINT `lobby_messages_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `lobby_messages_ibfk_2` FOREIGN KEY (`lobby_id`) REFERENCES `lobbies` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -129,14 +126,6 @@ CREATE TABLE `lobby_messages` (
 
 LOCK TABLES `lobby_messages` WRITE;
 /*!40000 ALTER TABLE `lobby_messages` DISABLE KEYS */;
-INSERT INTO `lobby_messages` VALUES
-(3,'2024-04-08 08:21:41',1,'Use do whatever he wants',1,NULL),
-(6,'2024-04-08 08:22:28',2,'Message d\'un admin',1,NULL),
-(7,'2024-04-08 08:22:37',2,'Deuxième message d\'un admin',1,NULL),
-(9,'2024-04-09 12:21:09',2,'Un autre',1,NULL),
-(10,'2024-04-09 12:21:13',2,'Un rfrfdfdrfdrgdgrd',1,NULL),
-(11,'2024-04-09 12:21:22',2,'Joao is looking',1,NULL),
-(12,'2024-04-09 12:21:34',2,'Antoine is coding',1,NULL);
 /*!40000 ALTER TABLE `lobby_messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,12 +137,12 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `username` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,9 +151,6 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES
-(1,'2024-04-08 08:07:14','User','$2b$10$8fDa/arvv5kz2IApUFlWd.OfXToxf8v0CcT2i.EpyxKS8djPPHYim'),
-(2,'2024-04-08 08:07:23','Admin','$2b$10$IWh5LABrh.m6o3javC4W.uprKGeiciDYw84Ftj3LCkb3byeKVlpz2');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -177,4 +163,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-10 11:03:30
+-- Dump completed on 2024-05-10 12:56:12
